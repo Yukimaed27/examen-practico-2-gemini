@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Asistente de Productividad | Gemini Function Calling</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="app-container">
+    <!-- Header -->
+    <header class="main-header">
+      <div class="header-left">
+        <div class="logo-badge">🤖 Gemini AI</div>
+        <div class="header-titles">
+          <h1>Asistente de Productividad Inteligente</h1>
+          <p class="subtitle">Arquitectura Function Calling en JavaScript & Google Gemini</p>
+        </div>
+      </div>
+      <div class="header-right">
+        <div class="creator-badge">
+          <span class="badge-label">Desarrollado por:</span>
+          <span class="creator-name">Yohaldo Vega Quinto</span>
+          <span class="creator-univ">UTP Lima Centro</span>
+        </div>
+        <a href="/api/download/docx" class="btn btn-outline" download>
+          📄 Descargar Informe Word
+        </a>
+      </div>
+    </header>
+
+    <!-- Quick Cases Panel -->
+    <section class="cases-panel">
+      <h2>⚡ Casos de Prueba Rápidos (Examen de Laboratorio)</h2>
+      <div class="cases-grid">
+        <button class="case-card" onclick="cargarCaso(1)">
+          <div class="case-tag">Caso 1</div>
+          <h3>Entrega de Informe</h3>
+          <p>"Crear una tarea para entregar el informe de pruebas el viernes a las 16:00 con María y José."</p>
+        </button>
+        <button class="case-card" onclick="cargarCaso(2)">
+          <div class="case-tag">Caso 2</div>
+          <h3>Prioridad Alta</h3>
+          <p>"Programar una reunión de revisión de requisitos para el lunes a las 09:30 con Carlos, Elena y Pedro. Prioridad alta."</p>
+        </button>
+        <button class="case-card" onclick="cargarCaso(3)">
+          <div class="case-tag warning">Caso 3 (Incompleto)</div>
+          <h3>Prevención de Alucinación</h3>
+          <p>"Necesito preparar una actividad de documentación del sistema para el próximo miércoles."</p>
+        </button>
+        <button class="case-card" onclick="cargarCaso(4)">
+          <div class="case-tag highlight">Reto Adicional</div>
+          <h3>Incidencia Crítica</h3>
+          <p>"Caída crítica de impacto alto y urgencia alta en base de datos. Agendar reunión hoy a las 17:00."</p>
+        </button>
+      </div>
+    </section>
+
+    <!-- Main Workspace -->
+    <main class="chat-workspace">
+      <div class="chat-history" id="chatHistory">
+        <div class="message system-welcome">
+          <div class="msg-avatar">🤖</div>
+          <div class="msg-content">
+            <p><strong>¡Hola! Soy tu asistente de productividad empresarial.</strong></p>
+            <p>Puedo ayudarte a agendar reuniones y registrar tareas estructuradas analizando tu solicitud en lenguaje natural. Utilizo <strong>Function Calling</strong> para interactuar de forma segura con el sistema local.</p>
+            <p class="hint">💡 Prueba escribiendo tu solicitud o haciendo clic en cualquiera de los 4 casos de arriba.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Input Bar -->
+      <form class="chat-input-bar" id="chatForm" onsubmit="enviarMensaje(event)">
+        <input 
+          type="text" 
+          id="userInput" 
+          placeholder="Escribe una solicitud (ej: 'Reunión mañana a las 10:00 con Pedro sobre la migración')..." 
+          autocomplete="off"
+          required
+        />
+        <button type="submit" id="sendBtn" class="btn btn-primary">
+          <span>Enviar</span>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+        </button>
+      </form>
+    </main>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

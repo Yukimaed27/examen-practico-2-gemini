@@ -1,0 +1,34 @@
+{
+  "name": "Examen Práctico 2",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "node test/productivityTools.test.js",
+    "start": "node src/server.js",
+    "start:cli": "node src/index.js",
+    "test:cases": "node src/testCases.js",
+    "generate:docx": "node scripts/generateDocx.js",
+    "dev": "node --watch src/server.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devEngines": {
+    "packageManager": {
+      "name": "pnpm",
+      "version": "12.5.1",
+      "onFail": "download"
+    }
+  },
+  "packageManager": "pnpm@12.5.1",
+  "type": "module",
+  "dependencies": {
+    "@google/genai": "^2.23.0",
+    "dotenv": "^18.0.1",
+    "express": "^5.2.1"
+  },
+  "devDependencies": {
+    "docx": "^9.7.1"
+  }
+}

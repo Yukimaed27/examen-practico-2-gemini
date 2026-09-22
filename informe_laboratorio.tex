@@ -1,0 +1,333 @@
+\documentclass[11pt,a4paper]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[spanish,es-tabla]{babel}
+\usepackage{amsmath,amssymb}
+\usepackage{geometry}
+\geometry{margin=2.5cm}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{xcolor}
+\usepackage{listings}
+\usepackage{hyperref}
+\usepackage{fancyhdr}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta, positioning, shapes.geometric}
+
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue!70!black,
+    citecolor=blue!70!black,
+    urlcolor=blue!70!black
+}
+
+% Configuración de encabezados y pies de página
+\pagestyle{fancy}
+\fancyhf{}
+\rhead{\small Asistente de Productividad con Gemini API y Function Calling}
+\lhead{\small Examen Práctico / Laboratorio TIC}
+\cfoot{\thepage}
+
+% Estilo para bloques de código
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.97,0.97,0.98}
+
+\lstdefinestyle{mystyle}{
+    backgroundcolor=\color{backcolour},   
+    commentstyle=\color{codegreen},
+    keywordstyle=\color{magenta},
+    numberstyle=\tiny\color{codegray},
+    stringstyle=\color{codepurple},
+    basicstyle=\ttfamily\footnotesize,
+    breakatwhitespace=false,         
+    breaklines=true,                 
+    captionpos=b,                    
+    keepspaces=true,                 
+    numbers=left,                    
+    numbersep=5pt,                  
+    showspaces=false,                
+    showstringspaces=false,
+    showtabs=false,                  
+    tabsize=2,
+    frame=single,
+    rulecolor=\color{black!15}
+}
+\lstset{style=mystyle}
+
+\title{
+    \vspace{-1.5cm}
+    \textbf{\Large INFORME DE LABORATORIO: SOLUCIONES DE PRODUCTIVIDAD AUTOMATIZADAS MEDIANTE LLM Y SCRIPTING}\\
+    \vspace{0.3cm}
+    \large Implementación de Asistente Empresarial con Google Gemini API, Function Calling y JavaScript bajo Entorno PNPM
+}
+
+\author{
+    \textbf{Creador / Autor:} Yohaldo Vega Quinto \\
+    \textbf{Institución:} Universidad Tecnológica del Perú (UTP) --- Sede Lima Centro \\
+    \textbf{Asignatura:} Ingeniería de Sistemas / Ingeniería de Software / TIC \\
+    \textbf{Profesor:} [Nombre del Docente]
+}
+\date{Septiembre de 2026}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+Este informe documenta el diseño, implementación y validación experimental de un asistente de productividad inteligente basado en Modelos de Lenguaje de Gran Escala (LLM). A diferencia de los enfoques convencionales basados en generación de texto libre, la solución aplica el paradigma de \textit{Function Calling} utilizando la API oficial de Google Gemini (\texttt{@google/genai}) orquestada en un entorno de ejecución en JavaScript (Node.js) gestionado con PNPM. El sistema permite interpretar solicitudes no estructuradas en lenguaje natural, extraer entidades tipadas y despachar la ejecución controlada de funciones locales de negocio (\texttt{crear\_tarea} y \texttt{calcular\_prioridad}). Asimismo, se implementaron mecanismos de contención contra alucinaciones frente a entradas ambiguas o incompletas. Se validaron los casos de prueba operativos con un 100\% de éxito y se fundamentan las respuestas conceptuales del laboratorio vinculadas a seguridad, determinismo y escalabilidad empresarial.
+\end{abstract}
+
+\vspace{0.3cm}
+\noindent\textbf{Palabras clave:} Function Calling, Google Gemini API, JavaScript, Automatización de Procesos, Modelos de Lenguaje, Seguridad en Software.
+
+\vspace{0.5cm}
+\hrule
+\vspace{0.5cm}
+
+\section{Introducción y Propósito del Laboratorio}
+
+La integración de Modelos de Lenguaje de Gran Escala (LLM) en procesos de ingeniería de software y productividad empresarial exige trascender la simple generación de texto conversacional. En entornos de producción, las organizaciones requieren que los sistemas interactúen de manera confiable con bases de datos, APIs de calendario, servicios de mensajería y flujos de trabajo preexistentes.
+
+El propósito central de este laboratorio consiste en construir un asistente de productividad capaz de conectar tres dimensiones técnicas:
+\begin{enumerate}
+    \item \textbf{Modelo de Lenguaje (Google Gemini):} Actúa como motor de razonamiento e inferencia semántica para interpretar solicitudes en lenguaje natural emitidas por los usuarios.
+    \item \textbf{Function Calling (Contrato de Interfaz):} Mecanismo estandarizado mediante el cual el LLM evalúa un catálogo formal de herramientas y decide invocar una función específica, devolviendo argumentos estructurados en formato JSON.
+    \item \textbf{Scripting en JavaScript (Ejecución Local Controlada):} El entorno anfitrión en Node.js valida los argumentos, ejecuta la lógica de negocio real de manera determinista y genera los identificadores y marcas de tiempo correspondientes.
+\end{enumerate}
+
+La literatura reciente resalta que la utilidad de los LLM se maximiza en tareas estructuradas, mientras que los flujos críticos requieren supervisión humana y arquitecturas donde el modelo nunca ejecute código arbitrario directamente en el sistema operativo.
+
+\section{Arquitectura de la Solución}
+
+El diseño propuesto descarta la delegación irrestricta de control a la inteligencia artificial. En su lugar, implementa un flujo desacoplado y seguro tal como se ilustra a continuación:
+
+\begin{figure}[h!]
+\centering
+\begin{tikzpicture}[
+    node distance=1.3cm and 1.5cm,
+    block/.style={rectangle, draw=blue!60, fill=blue!5, thick, text width=6.5cm, align=center, rounded corners, minimum height=0.9cm},
+    action/.style={rectangle, draw=green!60, fill=green!5, thick, text width=6.5cm, align=center, rounded corners, minimum height=0.9cm},
+    arrow/.style={-{Stealth[length=3mm]}, thick}
+]
+    \node (user) [block] {\textbf{Usuario}\\Solicitud en Lenguaje Natural};
+    \node (llm) [block, below=of user] {\textbf{Google Gemini (LLM)}\\Analiza semántica y selecciona herramienta};
+    \node (fc) [action, below=of llm] {\textbf{Llamada a Función (Function Calling)}\\Petición de llamada con argumentos JSON tipados};
+    \node (js) [action, below=of fc] {\textbf{Entorno de Ejecución JavaScript}\\Valida tipos, restricciones y ejecuta función local};
+    \node (res) [block, below=of js] {\textbf{Resultado Estructurado}\\Objeto JSON con ID, estado y timestamp ISO};
+
+    \draw [arrow] (user) -- node[right, font=\scriptsize] {Petición natural} (llm);
+    \draw [arrow] (llm) -- node[right, font=\scriptsize] {Argumentos extraídos} (fc);
+    \draw [arrow] (fc) -- node[right, font=\scriptsize] {Despacho local} (js);
+    \draw [arrow] (js) -- node[right, font=\scriptsize] {Persistencia / Retorno} (res);
+\end{tikzpicture}
+\caption{Diagrama de flujo de la arquitectura implementada.}
+\label{fig:arquitectura}
+\end{figure}
+
+En este esquema, el modelo de inteligencia artificial se restringe estrictamente a inferir la intención y extraer parámetros. La ejecución real reside en el código desarrollado por el programador.
+
+\section{Implementación Técnica}
+
+La solución fue desarrollada en JavaScript moderno utilizando módulos nativos ECMAScript (ES Modules) y gestionada con el administrador de paquetes \textbf{PNPM} para garantizar velocidad, reproducibilidad e inmutabilidad del árbol de dependencias.
+
+\subsection{Configuración del Entorno y Dependencias}
+El archivo \texttt{package.json} define las dependencias principales: el SDK oficial de Google Gen AI (\texttt{@google/genai}) y el cargador de configuración (\texttt{dotenv}). Las credenciales de acceso se gestionan de forma segura fuera del repositorio mediante el archivo \texttt{.env}.
+
+\subsection{Lógica de Negocio Local (\texttt{productivityTools.js})}
+La función \texttt{crear\_tarea} recibe los parámetros validados por la aplicación y genera la estructura de la tarea con identificador único y marca temporal ISO:
+
+\begin{lstlisting}[language=JavaScript, caption={Función local de negocio en JavaScript}]
+export function crear_tarea({ titulo, fecha, hora, participantes, prioridad = "normal" }) {
+  if (!titulo || !fecha || !hora) {
+    throw new Error("Parámetros obligatorios ausentes.");
+  }
+  return {
+    id: `task_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`,
+    titulo: titulo.trim(),
+    fecha: fecha.trim(),
+    hora: hora.trim(),
+    participantes: Array.isArray(participantes) ? participantes : [participantes],
+    prioridad: prioridad.toLowerCase(),
+    estado: "pendiente",
+    creada_en: new Date().toISOString()
+  };
+}
+\end{lstlisting}
+
+Para atender el \textbf{Reto Adicional para estudiantes avanzados} planteado en la sección 14 de la guía, se incorporó la función \texttt{calcular\_prioridad}:
+
+\begin{lstlisting}[language=JavaScript, caption={Cálculo de prioridad técnica según Impacto y Urgencia}]
+export function calcular_prioridad({ impacto, urgencia }) {
+  const imp = (impacto || "").toLowerCase();
+  const urg = (urgencia || "").toLowerCase();
+
+  let prioridadCalculada = "normal";
+  if ((imp === "alto" || imp === "alta") && (urg === "alta" || urg === "alto")) {
+    prioridadCalculada = "alta";
+  } else if (imp === "bajo" && urg === "baja") {
+    prioridadCalculada = "baja";
+  }
+  return {
+    impacto: imp,
+    urgencia: urg,
+    prioridad_calculada: prioridadCalculada,
+    justificacion: "Evaluación matricial de riesgo técnico."
+  };
+}
+\end{lstlisting}
+
+\subsection{Definición del Contrato de Herramientas (Function Declarations)}
+El contrato de comunicación con Gemini formaliza los tipos de datos requeridos y descripciones semánticas que orientan al modelo:
+
+\begin{lstlisting}[language=JavaScript, caption={Esquema formal de herramientas para Google Gemini}]
+export const geminiToolsConfig = [{
+  functionDeclarations: [{
+    name: "crear_tarea",
+    description: "Crea una tarea estructurada. Invocar SOLO si se cuenta con título, fecha, hora y participantes claros.",
+    parameters: {
+      type: "OBJECT",
+      properties: {
+        titulo: { type: "STRING", description: "Título descriptivo de la tarea" },
+        fecha: { type: "STRING", description: "Fecha en formato YYYY-MM-DD" },
+        hora: { type: "STRING", description: "Hora en formato HH:MM" },
+        participantes: { 
+          type: "ARRAY", 
+          items: { type: "STRING" },
+          description: "Lista de personas convocadas" 
+        },
+        prioridad: { 
+          type: "STRING", 
+          enum: ["baja", "normal", "alta"] 
+        }
+      },
+      required: ["titulo", "fecha", "hora", "participantes"]
+    }
+  }]
+}];
+\end{lstlisting}
+
+\subsection{Manejo de Ambigüedad y Prevención de Alucinaciones}
+Un requisito crítico del laboratorio (Caso 3) exige que ante una solicitud con datos faltantes el sistema no invente información. Para lograr esto, se establecieron directivas estrictas en las instrucciones del sistema (\textit{System Instructions}):
+\begin{quote}
+\textit{«NUNCA inventes horarios, fechas o participantes. Si la solicitud está incompleta, NO llames a \texttt{crear\_tarea}; en su lugar, responde en lenguaje natural solicitando los datos faltantes.»}
+\end{quote}
+Adicionalmente, se incluyó lógica de reintentos automáticos con retroceso exponencial ante eventuales saturaciones temporales del servicio (errores HTTP 503/429).
+
+\section{Validación Experimental y Casos de Prueba}
+
+Se implementó una suite automatizada (\texttt{src/testCases.js}) que somete al sistema a las cuatro pruebas operativas contempladas en la guía. Los resultados obtenidos mediante la ejecución con la API de Gemini se detallan a continuación:
+
+\begin{table}[h!]
+\centering
+\small
+\begin{tabular}{@{}lp{5.8cm}p{4.2cm}c@{}}
+\toprule
+\textbf{Caso} & \textbf{Entrada en Lenguaje Natural} & \textbf{Acción del Sistema} & \textbf{Estado} \\
+\midrule
+\textbf{1. Estándar} & «Crear una tarea para entregar el informe de pruebas el viernes a las 16:00. Participarán María y José.» & Invocó \texttt{crear\_tarea} con fecha calculada, hora y participantes. & \textbf{Superado} \\
+\midrule
+\textbf{2. Prioridad Alta} & «Programar una reunión de revisión de requisitos para el lunes a las 09:30 con Carlos, Elena y Pedro. La prioridad es alta.» & Invocó \texttt{crear\_tarea} asignando prioridad «alta». & \textbf{Superado} \\
+\midrule
+\textbf{3. Ambigüedad (Sin Hora/Gente)} & «Necesito preparar una actividad de documentación del sistema para el próximo miércoles.» & \textbf{No alucinó}. Respondió solicitando la hora y los participantes. & \textbf{Superado} \\
+\midrule
+\textbf{4. Reto Adicional} & «Incidencia crítica de impacto alto y urgencia alta en el gateway de pagos...» & Invocó \texttt{calcular\_prioridad} clasificando riesgo en «alta». & \textbf{Superado} \\
+\bottomrule
+\end{tabular}
+\caption{Matriz de resultados de las pruebas experimentales.}
+\label{tab:casos}
+\end{table}
+
+\subsection{Evidencia de Ejecución Real (Log de Salida)}
+A continuación se presenta un extracto del log generado por el sistema durante la ejecución de las pruebas:
+
+\begin{lstlisting}[basicstyle=\ttfamily\scriptsize, caption={Salida de la ejecución de casos de prueba}]
+============================================================
+Caso 1 - Solicitud estándar con participantes y hora
+============================================================
+[LLM]: El modelo decidió invocar la función local: "crear_tarea"
+[Argumentos extraídos por Gemini]: {
+  "titulo": "Entregar el informe de pruebas",
+  "fecha": "2026-09-25",
+  "hora": "16:00",
+  "participantes": ["María", "José"],
+  "prioridad": "normal"
+}
+[JavaScript]: Ejecutando función local 'crear_tarea'...
+[Resultado Estructurado Producido por JS]:
+{
+  "id": "task_1790044797699_am6nf",
+  "titulo": "Entregar el informe de pruebas",
+  "fecha": "2026-09-25",
+  "hora": "16:00",
+  "participantes": ["María", "José"],
+  "prioridad": "normal",
+  "estado": "pendiente",
+  "creada_en": "2026-09-22T02:39:57.699Z"
+}
+[VALIDACIÓN EXITOSA]
+\end{lstlisting}
+
+En el Caso 3, ante la omisión de datos indispensables, la respuesta devuelta por el asistente fue:
+\begin{quote}
+\textit{«Para poder agendar esta actividad y crear la tarea, por favor indícame los siguientes datos que hacen falta: 1. Hora de inicio (ejemplo: 10:00). 2. Participantes convocados o involucrados. Quedo atento para proceder con el registro.»}
+\end{quote}
+Demostrando el estricto cumplimiento de la restricción contra alucinaciones.
+
+\section{Cuestionario de Evaluación Teórico-Práctica}
+
+\subsection{Pregunta 1: ¿Cuál es la diferencia entre pedirle al LLM que genere una respuesta y utilizar Function Calling?}
+\noindent\textbf{Respuesta:}\\
+La diferencia radica en el \textbf{determinismo, el control de tipos y los efectos secundarios en el software}:
+\begin{itemize}
+    \item \textbf{Generación de texto simple ($Usuario \rightarrow LLM \rightarrow Texto$):} El modelo predice tokens estadísticamente. Si se le pide generar un JSON, puede sufrir deformaciones sintácticas, inventar campos o generar formatos incoherentes. Además, el modelo no interactúa con ningún sistema externo.
+    \item \textbf{Function Calling ($Usuario \rightarrow LLM \rightarrow Función + Args \rightarrow Programa \rightarrow Resultado$):} El modelo es utilizado como un analizador semántico de lenguaje natural que produce argumentos fuertemente tipados conforme a un esquema predefinido. La aplicación de software mantiene el control absoluto de la ejecución, validando restricciones de negocio, persistiendo en bases de datos y gestionando errores.
+\end{itemize}
+
+\subsection{Pregunta 2: ¿Por qué no debemos permitir que el modelo ejecute cualquier función del computador?}
+\noindent\textbf{Respuesta:}\\
+Permitir que un modelo invoque comandos arbitrarios del sistema operativo (por ejemplo, invocaciones a la consola o acceso irrestricto al sistema de archivos) vulnera de forma crítica el \textbf{principio de mínimo privilegio}:
+\begin{enumerate}
+    \item \textbf{Inyección Indirecta de Prompts:} Entradas manipuladas por usuarios maliciosos podrían forzar al modelo a solicitar comandos destructivos (como borrado de directorios o robo de variables de entorno con credenciales).
+    \item \textbf{Naturaleza Probabilística:} Un modelo puede malinterpretar una solicitud legítima y ordenar acciones destructivas irreversibles.
+    \item \textbf{Control de la Aplicación:} La arquitectura debe basarse en un catálogo cerrado de funciones permitidas (\textit{whitelist}). La aplicación actúa como un cortafuegos que autoriza y supervisa cada llamada.
+\end{enumerate}
+
+\subsection{Pregunta 3: ¿Qué sucede si el usuario proporciona una solicitud ambigua?}
+\noindent\textbf{Respuesta:}\\
+En implementaciones ingenuas, el modelo suele «completar» la información ausente inventando horarios o participantes (alucinación), lo que en contextos corporativos ocasiona reuniones fantasmas o tareas mal asignadas.
+Una arquitectura madura diseña las directivas del modelo para que, ante la ausencia de parámetros marcados como obligatorios en el contrato de la herramienta, el sistema suspenda la invocación y active un diálogo aclaratorio en lenguaje natural con el usuario, preservando la fidelidad de la información.
+
+\subsection{Pregunta 4: ¿Cómo convertirías este laboratorio en una solución empresarial real?}
+\noindent\textbf{Respuesta:}\\
+Para llevar este prototipo a escala corporativa se debe transicionar hacia una arquitectura de microservicios orientada a eventos:
+\begin{enumerate}
+    \item \textbf{API Gateway y Seguridad:} Capa perimetral con autenticación OAuth2 / JWT, limitación de tasa (\textit{rate limiting}) y control de acceso basado en roles (RBAC).
+    \item \textbf{Colas de Mensajería y Tareas Asíncronas:} Uso de sistemas como Redis/BullMQ o RabbitMQ para desacoplar las peticiones y manejar reintentos y tolerancia a fallos.
+    \item \textbf{Integración con Servicios Externos:} Conectores seguros hacia Google Calendar / Microsoft Graph API para agendamiento real, bases de datos relacionales (PostgreSQL) para persistencia y auditoría, y servicios de mensajería (Slack/SendGrid) para notificaciones.
+    \item \textbf{Trazabilidad y Observabilidad:} Registro inmutable de cada interacción (prompt, tokens consumidos, versión del modelo, respuesta de herramienta) bajo normativas de cumplimiento (ISO 27001).
+    \item \textbf{Human-in-the-Loop:} Para acciones con impacto financiero o estructural, requerir confirmación explícita del usuario antes de ejecutar la función.
+\end{enumerate}
+
+\section{Conclusiones}
+
+\begin{enumerate}
+    \item Se demostró con éxito que los Modelos de Lenguaje de Gran Escala pueden integrarse de manera determinista y segura en sistemas de información mediante el uso de \textbf{Function Calling}.
+    \item La sustitución del entorno propuesto en Python/OpenAI por \textbf{JavaScript (Node.js) con la API de Google Gemini} y el gestor \textbf{PNPM} probó que los patrones de diseño de agentes y automatización son transferibles y agnósticos al lenguaje.
+    \item El control de alucinaciones mediante el diseño defensivo de esquemas y directivas de sistema es fundamental para garantizar que el asistente no introduzca datos ficticios en flujos de trabajo corporativos.
+    \item La separación entre la capa de inferencia cognitiva (LLM) y la capa de ejecución procedimental (código anfitrión) constituye el estándar de ingeniería para el desarrollo seguro de software asistido por inteligencia artificial.
+\end{enumerate}
+
+\section{Referencias Bibliográficas}
+
+\begin{enumerate}
+    \item Khan, S., et al. (2024). \textit{Navigating software development in the ChatGPT and GitHub Copilot era}. Business Horizons, 67(5), 649--661. DOI: \href{https://doi.org/10.1016/j.bushor.2024.04.004}{10.1016/j.bushor.2024.04.004}.
+    \item Hou, X., et al. (2024). \textit{Large Language Models for Code Review: A Comprehensive Survey}. Information and Software Technology, 175, 107523. ScienceDirect.
+    \item Martinez, M., et al. (2024). \textit{An architecture for model-based and intelligent automation in DevOps}. Journal of Systems and Software, 217, 112180.
+    \item Al-Sayed, R., et al. (2024). \textit{Automating software documentation: Employing LLMs for precise use case description}. Procedia Computer Science, 246, 1346--1354.
+    \item Uandykova, M., et al. (2024). \textit{Java coding using artificial intelligence}. Frontiers in Computer Science, 6, 1473870.
+    \item Jing, Y., Wang, H., et al. (2024). \textit{What factors will affect the effectiveness of using ChatGPT to solve programming problems? A quasi-experimental study}. Humanities and Social Sciences Communications, Nature, 11, 319.
+\end{enumerate}
+
+\end{document}

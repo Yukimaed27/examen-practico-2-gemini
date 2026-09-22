@@ -1,0 +1,11 @@
+services:
+  - type: web
+    name: examen-gemini-asistente
+    runtime: node
+    buildCommand: pnpm install && node scripts/generateDocx.js
+    startCommand: node src/server.js
+    envVars:
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: NODE_ENV
+        value: production
