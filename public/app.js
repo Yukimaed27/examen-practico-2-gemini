@@ -3,6 +3,51 @@ const chatForm = document.getElementById("chatForm");
 const userInput = document.getElementById("userInput");
 const sendBtn = document.getElementById("sendBtn");
 
+// Referencias del Visor / Mostrador del Informe
+const reportModal = document.getElementById("reportModal");
+const reportWindow = document.getElementById("reportWindow");
+const minimizedPill = document.getElementById("minimizedPill");
+
+function abrirVisorInforme() {
+  if (reportModal) {
+    reportModal.style.display = "flex";
+    if (minimizedPill) minimizedPill.style.display = "none";
+  }
+}
+
+function cerrarVisorInforme() {
+  if (reportModal) reportModal.style.display = "none";
+  if (minimizedPill) minimizedPill.style.display = "none";
+}
+
+function minimizarVisorInforme() {
+  if (reportModal) reportModal.style.display = "none";
+  if (minimizedPill) minimizedPill.style.display = "flex";
+}
+
+function restaurarVisorInforme() {
+  if (minimizedPill) minimizedPill.style.display = "none";
+  if (reportModal) reportModal.style.display = "flex";
+}
+
+function toggleMaximizarVisor() {
+  if (reportWindow) {
+    reportWindow.classList.toggle("fullscreen");
+  }
+}
+
+window.addEventListener("click", (e) => {
+  if (e.target === reportModal) {
+    cerrarVisorInforme();
+  }
+});
+
+window.addEventListener("keydown", (e) => {
+  if (e.key === "Escape" && reportModal && reportModal.style.display !== "none") {
+    minimizarVisorInforme();
+  }
+});
+
 const casosTexto = {
   1: "Crear una tarea para entregar el informe de pruebas el viernes a las 16:00. Participarán María y José.",
   2: "Programar una reunión de revisión de requisitos para el lunes a las 09:30 con Carlos, Elena y Pedro. La prioridad es alta.",

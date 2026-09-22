@@ -13,7 +13,12 @@
   <div class="app-container">
     <!-- Banner Prominente de Autoría del Proyecto -->
     <section class="author-hero-banner">
-      <div class="author-badge-pill">🎓 EXAMEN PRÁCTICO 2 - TIC</div>
+      <div class="author-banner-top">
+        <div class="author-badge-pill">🎓 EXAMEN PRÁCTICO 2 - TIC</div>
+        <button class="btn btn-glow" onclick="abrirVisorInforme()">
+          📖 Leer Informe Completo (Mostrador)
+        </button>
+      </div>
       <div class="author-info-content">
         <span class="author-label">CREADOR Y DESARROLLADOR DEL PROYECTO:</span>
         <h1 class="author-main-name">Yohaldo Edmundo Vega Quinto</h1>
@@ -41,8 +46,11 @@
           <span class="creator-name">Yohaldo Vega Quinto</span>
           <span class="creator-univ">Código: U22212893 - UTP Lima Centro</span>
         </div>
+        <button class="btn btn-primary" onclick="abrirVisorInforme()">
+          📖 Ver Informe
+        </button>
         <a href="/api/download/docx" class="btn btn-outline" download>
-          📄 Descargar Informe Word
+          📄 Descargar Word
         </a>
       </div>
     </header>
@@ -102,6 +110,206 @@
         </button>
       </form>
     </main>
+  </div>
+
+  <!-- Modal / Mostrador del Informe Académico -->
+  <div id="reportModal" class="report-modal" style="display: none;">
+    <div class="report-window" id="reportWindow">
+      <div class="report-window-header">
+        <div class="window-title">
+          <span class="win-icon">📄</span>
+          <span class="win-title-text">Informe Académico: Soluciones de Productividad con Gemini & Function Calling</span>
+        </div>
+        <div class="window-actions">
+          <a href="/api/download/docx" class="btn btn-sm btn-outline" download style="font-size:0.75rem; padding:0.3rem 0.6rem;">
+            💾 Descargar Word
+          </a>
+          <button class="win-ctrl-btn win-min" title="Minimizar" onclick="minimizarVisorInforme()">—</button>
+          <button class="win-ctrl-btn win-max" title="Maximizar / Restaurar" onclick="toggleMaximizarVisor()">🗖</button>
+          <button class="win-ctrl-btn win-close" title="Cerrar" onclick="cerrarVisorInforme()">✖</button>
+        </div>
+      </div>
+
+      <div class="report-window-body">
+        <article class="report-document">
+          <header class="doc-cover">
+            <span class="doc-badge">UNIVERSIDAD TECNOLÓGICA DEL PERÚ (UTP) - SEDE LIMA CENTRO</span>
+            <h1 class="doc-title">INFORME DE LABORATORIO: SOLUCIONES DE PRODUCTIVIDAD AUTOMATIZADAS MEDIANTE LLM Y SCRIPTING</h1>
+            <p class="doc-subtitle">Implementación de Asistente Empresarial con Google Gemini API, Function Calling y JavaScript bajo Entorno PNPM</p>
+
+            <div class="doc-author-box">
+              <div class="author-row">
+                <span class="lbl">👤 Creador / Autor:</span>
+                <span class="val"><strong>Yohaldo Edmundo Vega Quinto</strong></span>
+              </div>
+              <div class="author-row">
+                <span class="lbl">📌 Código Universitario:</span>
+                <span class="val"><strong>U22212893</strong></span>
+              </div>
+              <div class="author-row">
+                <span class="lbl">🏛️ Institución:</span>
+                <span class="val">Universidad Tecnológica del Perú (UTP) — Sede Lima Centro</span>
+              </div>
+              <div class="author-row">
+                <span class="lbl">📚 Asignatura:</span>
+                <span class="val">Tecnologías de la Información y Comunicación (T.I.C.) / Ingeniería de Sistemas</span>
+              </div>
+            </div>
+          </header>
+
+          <section class="doc-section highlight-box">
+            <h3>💡 Resumen Ejecutivo</h3>
+            <p>Este informe documenta el diseño, desarrollo y validación de un asistente de productividad empresarial inteligente. La solución descarta la generación de texto libre y adopta la arquitectura de <strong>Function Calling</strong> con la API de Google Gemini (<code>@google/genai</code>) y JavaScript (Node.js) gestionado con PNPM. El sistema interpreta lenguaje natural, extrae argumentos estructurados y ejecuta localmente funciones de negocio (<code>crear_tarea</code> y <code>calcular_prioridad</code>), previniendo alucinaciones ante datos incompletos con un 100% de éxito en los casos de prueba.</p>
+          </section>
+
+          <section class="doc-section">
+            <h2>1. Introducción y Propósito del Laboratorio</h2>
+            <p>La integración de Modelos de Lenguaje de Gran Escala (LLM) en procesos corporativos exige conectar tres conceptos esenciales:</p>
+            <ul>
+              <li><strong>Modelo de Lenguaje (Google Gemini):</strong> Analiza la semántica e intención del usuario sin ejecutar código directamente.</li>
+              <li><strong>Function Calling (Contrato JSON):</strong> El modelo selecciona la herramienta adecuada del catálogo formal y genera los argumentos tipados necesarios.</li>
+              <li><strong>Scripting en JavaScript (Ejecución Local):</strong> La aplicación anfitriona en Node.js valida tipos, evalúa reglas de negocio y produce el resultado estructurado de manera determinista.</li>
+            </ul>
+          </section>
+
+          <section class="doc-section">
+            <h2>2. Arquitectura de la Solución</h2>
+            <div class="flow-box">
+              <div class="flow-step">👤 Usuario (Lenguaje Natural)</div>
+              <div class="flow-arrow">⬇</div>
+              <div class="flow-step">🤖 Google Gemini (Inferencia Semántica & Selección de Tool)</div>
+              <div class="flow-arrow">⬇</div>
+              <div class="flow-step">📋 Function Calling (Petición con Argumentos Tipados JSON)</div>
+              <div class="flow-arrow">⬇</div>
+              <div class="flow-step">⚙️ Entorno JavaScript (Ejecución Local Controlada: crear_tarea)</div>
+              <div class="flow-arrow">⬇</div>
+              <div class="flow-step">✅ Resultado Estructurado (JSON con ID único, fecha ISO y estado)</div>
+            </div>
+          </section>
+
+          <section class="doc-section">
+            <h2>3. Implementación Técnica en JavaScript</h2>
+            <p>Se implementaron funciones locales en <code>src/tools/productivityTools.js</code>:</p>
+            <pre><code>// Función local de negocio
+export function crear_tarea({ titulo, fecha, hora, participantes, prioridad = "normal" }) {
+  if (!titulo || !fecha || !hora) throw new Error("Parámetros obligatorios ausentes.");
+  return {
+    id: `task_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`,
+    titulo: titulo.trim(),
+    fecha: fecha.trim(),
+    hora: hora.trim(),
+    participantes: Array.isArray(participantes) ? participantes : [participantes],
+    prioridad: prioridad.toLowerCase(),
+    estado: "pendiente",
+    creada_en: new Date().toISOString()
+  };
+}</code></pre>
+
+            <p>Para el <strong>Reto Adicional</strong> de la guía, se incorporó la función de evaluación de matriz de riesgo técnico:</p>
+            <pre><code>// Reto Adicional: Cálculo de prioridad según impacto y urgencia
+export function calcular_prioridad({ impacto, urgencia }) {
+  const imp = (impacto || "").toLowerCase();
+  const urg = (urgencia || "").toLowerCase();
+  let prioridadCalculada = "normal";
+  if ((imp === "alto" || imp === "alta") && (urg === "alta" || urg === "alto")) {
+    prioridadCalculada = "alta";
+  } else if (imp === "bajo" && urg === "baja") {
+    prioridadCalculada = "baja";
+  }
+  return { impacto: imp, urgencia: urg, prioridad_calculada: prioridadCalculada };
+}</code></pre>
+          </section>
+
+          <section class="doc-section">
+            <h2>4. Validación Experimental y Resultados</h2>
+            <div class="table-responsive">
+              <table class="doc-table">
+                <thead>
+                  <tr>
+                    <th>Caso</th>
+                    <th>Solicitud del Usuario</th>
+                    <th>Comportamiento de Gemini y JavaScript</th>
+                    <th>Estado</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><strong>Caso 1: Estándar</strong></td>
+                    <td>«Crear tarea para entregar informe el viernes a las 16:00 con María y José»</td>
+                    <td>Gemini calculó la fecha ISO del viernes, extrajo participantes y ejecutó <code>crear_tarea</code>.</td>
+                    <td><span class="badge-success">SUPERADO</span></td>
+                  </tr>
+                  <tr>
+                    <td><strong>Caso 2: Prioridad Alta</strong></td>
+                    <td>«Reunión revisión de requisitos lunes a las 09:30 con Carlos, Elena y Pedro. Prioridad alta»</td>
+                    <td>Extrajo prioridad explícita «alta», fecha del lunes y ejecutó <code>crear_tarea</code>.</td>
+                    <td><span class="badge-success">SUPERADO</span></td>
+                  </tr>
+                  <tr>
+                    <td><strong>Caso 3: Ambigüedad</strong></td>
+                    <td>«Documentar el sistema el próximo miércoles» (sin hora ni participantes)</td>
+                    <td><strong>NO alucinó</strong>. Detectó la falta de datos y respondió solicitando la hora y los participantes.</td>
+                    <td><span class="badge-success">SUPERADO</span></td>
+                  </tr>
+                  <tr>
+                    <td><strong>Caso 4: Reto</strong></td>
+                    <td>«Incidencia crítica de impacto alto y urgencia alta en gateway de pagos...»</td>
+                    <td>Invocó <code>calcular_prioridad</code> clasificando el incidente en prioridad «alta».</td>
+                    <td><span class="badge-success">SUPERADO</span></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <section class="doc-section">
+            <h2>5. Cuestionario de Evaluación Teórico-Práctica</h2>
+            <div class="qa-block">
+              <h4>¿Cuál es la diferencia entre pedirle al LLM que genere una respuesta y utilizar Function Calling?</h4>
+              <p>La generación libre de texto produce lenguaje probabilístico no estructurado propenso a deformaciones sintácticas y sin conexión al mundo real. Function Calling transforma al modelo en un extractor semántico tipado, reservando la ejecución real de operaciones y validaciones de negocio al código en JavaScript.</p>
+            </div>
+            <div class="qa-block">
+              <h4>¿Por qué no debemos permitir que el modelo ejecute cualquier función del computador?</h4>
+              <p>Vulnera el principio de mínimo privilegio. Ataques de inyección indirecta de prompts podrían inducir al modelo a ejecutar comandos de sistema destructivos o robar credenciales del entorno. La aplicación debe mantener una lista blanca estricta de funciones autorizadas.</p>
+            </div>
+            <div class="qa-block">
+              <h4>¿Qué sucede si el estudiante le proporciona al modelo una solicitud ambigua?</h4>
+              <p>En sistemas sin diseño defensivo, el modelo alucina inventando datos faltantes. Con las directivas implementadas en este proyecto, el modelo suspende la llamada a herramientas y solicita aclaraciones al usuario en lenguaje natural.</p>
+            </div>
+            <div class="qa-block">
+              <h4>¿Cómo convertirías este laboratorio en una solución empresarial real?</h4>
+              <p>Evolucionando hacia una arquitectura de microservicios con API Gateway, autenticación OAuth2, colas de mensajería (BullMQ/RabbitMQ), conectores a Google Calendar, bases de datos PostgreSQL para auditoría inmutable y confirmación humana (Human-in-the-Loop) para tareas críticas.</p>
+            </div>
+          </section>
+
+          <section class="doc-section">
+            <h2>6. Conclusiones</h2>
+            <ul>
+              <li>Se demostró que la arquitectura de Function Calling con Gemini y JavaScript resuelve de forma óptima los retos planteados en la guía de laboratorio.</li>
+              <li>La contención estricta de alucinaciones preserva la integridad de los datos en sistemas de productividad empresarial.</li>
+              <li>El proyecto queda completamente funcional tanto en consola interactiva como en plataforma web desplegada en la nube.</li>
+            </ul>
+          </section>
+
+          <section class="doc-section">
+            <h2>7. Referencias Bibliográficas</h2>
+            <ol>
+              <li>Khan, S., et al. (2024). <em>Navigating software development in the ChatGPT and GitHub Copilot era</em>. Business Horizons, 67(5), 649–661.</li>
+              <li>Hou, X., et al. (2024). <em>Large Language Models for Code Review: A Comprehensive Survey</em>. Information and Software Technology, 175, 107523.</li>
+              <li>Martinez, M., et al. (2024). <em>An architecture for model-based and intelligent automation in DevOps</em>. Journal of Systems and Software, 217, 112180.</li>
+              <li>Jing, Y., Wang, H., et al. (2024). <em>What factors will affect the effectiveness of using ChatGPT to solve programming problems?</em> Nature, 11, 319.</li>
+            </ol>
+          </section>
+        </article>
+      </div>
+    </div>
+  </div>
+
+  <!-- Píldora flotante para restaurar cuando está minimizado -->
+  <div id="minimizedPill" class="minimized-pill" style="display: none;" onclick="restaurarVisorInforme()">
+    <span class="pill-dot"></span>
+    <span class="pill-text">📄 Informe: <strong>Yohaldo Vega (U22212893)</strong></span>
+    <button class="pill-expand-btn" title="Restaurar informe">🗖 Restaurar</button>
   </div>
 
   <script src="app.js"></script>
