@@ -1,6 +1,10 @@
 # Asistente de Productividad Automatizada con Gemini API y Function Calling en JavaScript
 
-Este proyecto implementa la solución completa a las problemáticas planteadas en la **Guía de Laboratorio: Creación de soluciones de productividad automatizadas bajo scripting**, adaptada al ecosistema de **JavaScript (Node.js ES Modules)** utilizando la **API oficial de Google Gemini** (`@google/genai`) y administrado exclusivamente mediante **PNPM**.
+> ### 🎓 PROYECTO ACADÉMICO - EXAMEN PRÁCTICO 2 (T.I.C.)
+> - **Creador y Desarrollador:** **Yohaldo Edmundo Vega Quinto**
+> - **Código Estudiantil:** **U22212893**
+> - **Universidad:** **Universidad Tecnológica del Perú (UTP) - Sede Lima Centro**
+> - **Tecnología:** JavaScript (Node.js ES Modules) + Google Gemini API (`@google/genai`) + PNPM
 
 ---
 

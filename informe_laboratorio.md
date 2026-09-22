@@ -3,19 +3,22 @@
 **Implementación de Asistente Empresarial con Google Gemini API, Function Calling y JavaScript bajo Entorno PNPM**
 
 - **Asignatura:** Ingeniería de Sistemas / Ingeniería de Software / TIC
-- **Modalidad:** Laboratorio con Computadores / Examen Práctico
-- **Creador / Estudiante:** Yohaldo Vega Quinto
+- **Modalidad:** Laboratorio con Computadores / Examen Práctico 2
+- **Creador / Estudiante:** Yohaldo Edmundo Vega Quinto
+- **Código UTP:** U22212893
 - **Institución:** Universidad Tecnológica del Perú (UTP) - Sede Lima Centro
 - **Profesor:** [Nombre del Docente]
 - **Fecha:** Septiembre de 2026
 
 ---
 
-> ### 👤 APARTADO DEL CREADOR
-> **Autor / Desarrollador:** Yohaldo Vega Quinto  
-> **Universidad:** Universidad Tecnológica del Perú (UTP)  
-> **Sede:** Lima Centro  
-> **Proyecto:** Soluciones de Productividad Automatizadas con Google Gemini API y JavaScript bajo Entorno PNPM
+> ### 👤 AUTORÍA Y DATOS DEL CREADOR
+> - **Estudiante / Desarrollador:** Yohaldo Edmundo Vega Quinto  
+> - **Código Universitario:** U22212893  
+> - **Universidad:** Universidad Tecnológica del Perú (UTP)  
+> - **Sede:** Lima Centro  
+> - **Curso:** Tecnologías de la Información y Comunicación (T.I.C.) - Examen Práctico 2  
+> - **Proyecto:** Soluciones de Productividad Automatizadas con Google Gemini API y JavaScript bajo Entorno PNPM
 
 ---
 

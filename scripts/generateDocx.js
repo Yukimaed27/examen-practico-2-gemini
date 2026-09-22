@@ -183,13 +183,19 @@ async function buildDocx() {
                       new Paragraph({
                         children: [
                           new TextRun({ text: "Creador: ", bold: true }),
-                          new TextRun({ text: "Yohaldo Vega Quinto" })
+                          new TextRun({ text: "Yohaldo Edmundo Vega Quinto" })
+                        ]
+                      }),
+                      new Paragraph({
+                        children: [
+                          new TextRun({ text: "Código Estudiante: ", bold: true }),
+                          new TextRun({ text: "U22212893" })
                         ]
                       }),
                       new Paragraph({
                         children: [
                           new TextRun({ text: "Institución: ", bold: true }),
-                          new TextRun({ text: "UTP Lima Centro" })
+                          new TextRun({ text: "UTP Sede Lima Centro" })
                         ]
                       }),
                       new Paragraph({
@@ -207,8 +213,8 @@ async function buildDocx() {
           }),
 
           createCallout(
-            "DATOS DEL CREADOR DEL PROYECTO",
-            "Desarrollador / Autor: Yohaldo Vega Quinto\nInstitución: Universidad Tecnológica del Perú (UTP) - Sede Lima Centro\nProyecto: Implementación y Adaptación de Asistente de Productividad Empresarial con Google Gemini API y JavaScript"
+            "AUTORÍA Y DATOS DEL CREADOR",
+            "Estudiante / Desarrollador: Yohaldo Edmundo Vega Quinto\nCódigo Universitario: U22212893\nUniversidad: Universidad Tecnológica del Perú (UTP) - Sede Lima Centro\nCurso: Tecnologías de la Información y Comunicación (T.I.C.) - Examen Práctico 2\nProyecto: Implementación y Adaptación de Asistente de Productividad Empresarial con Google Gemini API y JavaScript"
           ),
 
           createCallout(
