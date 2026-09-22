@@ -28,9 +28,13 @@ app.post("/api/chat", async (req, res) => {
     return res.json({ ok: true, data: resultado });
   } catch (error) {
     console.error("Error procesando solicitud web:", error);
+    let userMsg = error.message || "Ocurrió un error inesperado al consultar Gemini.";
+    if (userMsg.includes("429") || userMsg.includes("RESOURCE_EXHAUSTED") || userMsg.includes("quota")) {
+      userMsg = "Se ha alcanzado temporalmente el límite de cuota en Google Gemini (Error 429). Por favor espera un momento antes de enviar otra consulta.";
+    }
     return res.status(500).json({
       ok: false,
-      error: error.message || "Ocurrió un error inesperado al consultar Gemini."
+      error: userMsg
     });
   }
 });

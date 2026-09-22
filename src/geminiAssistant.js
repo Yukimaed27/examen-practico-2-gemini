@@ -23,7 +23,17 @@ export function crearAsistenteGemini(apiKey = process.env.GEMINI_API_KEY) {
   }
 
   const ai = new GoogleGenAI({ apiKey });
-  const modelo = process.env.GEMINI_MODEL || "gemini-3.6-flash";
+  
+  // Modelos compatibles con Function Calling ordenados por disponibilidad y cuotas
+  const modelosCandidatos = [
+    process.env.GEMINI_MODEL,
+    "gemini-3.5-flash",
+    "gemini-3.5-flash-lite",
+    "gemini-flash-latest",
+    "gemini-3.7-flash",
+    "gemini-3.6-flash"
+  ].filter(Boolean);
+  const modelosDisponibles = [...new Set(modelosCandidatos)];
 
   /**
    * Procesa una solicitud de usuario en lenguaje natural.
@@ -62,34 +72,60 @@ POLÍTICA ESTRICTA CONTRA ALUCINACIONES Y DATOS FALTANTES (CASOS AMBIGUOS):
     }
 
     try {
-      // 1. Envío de solicitud al modelo con herramientas declaradas y reintento en caso de 503/429
+      // 1. Envío de solicitud al modelo con herramientas declaradas y conmutación inteligente ante 429/503
       let response;
-      let intentos = 0;
-      const maxIntentos = 3;
+      let ultimoError = null;
 
-      while (intentos < maxIntentos) {
-        try {
-          response = await ai.models.generateContent({
-            model: modelo,
-            contents: solicitud,
-            config: {
-              systemInstruction,
-              tools: geminiToolsConfig
+      for (let i = 0; i < modelosDisponibles.length; i++) {
+        const modeloActual = modelosDisponibles[i];
+        let intentos = 0;
+        const maxIntentos = 2;
+
+        while (intentos < maxIntentos) {
+          try {
+            response = await ai.models.generateContent({
+              model: modeloActual,
+              contents: solicitud,
+              config: {
+                systemInstruction,
+                tools: geminiToolsConfig
+              }
+            });
+            break;
+          } catch (apiError) {
+            ultimoError = apiError;
+            intentos++;
+            const msg = apiError.message || "";
+            const esCuota = msg.includes("429") || msg.includes("RESOURCE_EXHAUSTED") || msg.includes("quota");
+            const es503 = msg.includes("503");
+
+            // Si es un error de cuota diaria (429) o modelo no disponible (404), pasamos al siguiente modelo de respaldo
+            if ((esCuota || msg.includes("404")) && i < modelosDisponibles.length - 1) {
+              const siguienteModelo = modelosDisponibles[i + 1];
+              if (verbose) {
+                console.warn(`⚠️ [Aviso]: Cuota agotada o modelo no disponible en '${modeloActual}'. Conmutando automáticamente al respaldo '${siguienteModelo}'...`);
+              }
+              break;
             }
-          });
-          break;
-        } catch (apiError) {
-          intentos++;
-          const esTransitorio = apiError.message?.includes("503") || apiError.message?.includes("429");
-          if (esTransitorio && intentos < maxIntentos) {
-            if (verbose) {
-              console.log(`⏳ [Aviso]: Demanda alta en el servicio (503/429). Reintentando en ${intentos * 1.5}s (intento ${intentos}/${maxIntentos})...`);
+
+            if (es503 && intentos < maxIntentos) {
+              if (verbose) {
+                console.log(`⏳ [Aviso]: Servicio ocupado (503). Reintentando en ${intentos * 1.5}s...`);
+              }
+              await new Promise((resolve) => setTimeout(resolve, intentos * 1500));
+            } else {
+              break;
             }
-            await new Promise((resolve) => setTimeout(resolve, intentos * 1500));
-          } else {
-            throw apiError;
           }
         }
+
+        if (response) {
+          break;
+        }
+      }
+
+      if (!response) {
+        throw ultimoError || new Error("No fue posible obtener respuesta de los modelos disponibles de Gemini.");
       }
 
       const functionCalls = response.functionCalls;
@@ -159,6 +195,7 @@ POLÍTICA ESTRICTA CONTRA ALUCINACIONES Y DATOS FALTANTES (CASOS AMBIGUOS):
 
   return {
     procesarSolicitud,
-    modelo
+    modelo: modelosDisponibles[0],
+    modelosDisponibles
   };
 }

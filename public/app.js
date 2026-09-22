@@ -201,9 +201,18 @@ async function enviarMensaje(e) {
     if (json.ok && json.data) {
       appendAssistantResponse(json.data);
     } else {
+      let errMsg = json.error || "No se pudo procesar la solicitud.";
+      try {
+        if (typeof errMsg === "string" && errMsg.startsWith("{")) {
+          const parsed = JSON.parse(errMsg);
+          if (parsed.error?.message) {
+            errMsg = parsed.error.message;
+          }
+        }
+      } catch (_) {}
       appendAssistantResponse({
         tipo: "texto",
-        respuesta: `⚠️ Error del Asistente: ${json.error || "No se pudo procesar la solicitud."}`
+        respuesta: `⚠️ Aviso: ${errMsg}`
       });
     }
   } catch (err) {
